@@ -1,7 +1,7 @@
 
 import { EyeOff, Eye, Mail, Lock, User, ArrowRight } from 'lucide-react';
 import registerImage from '../assets/images/auth_register.jpg';
-import useAuthHook from '../hooks/authHook';
+import useAuthHook from '../hooks/useAuthHook';
 
 const RegisterUI = () => {
   const { register, handleSubmit, errors, handleRegisterSubmit, passwordValue, showPassword, setShowPassword, showConfirmPassword, setShowConfirmPassword, navigate, strengthInfo, strengthScore } = useAuthHook();

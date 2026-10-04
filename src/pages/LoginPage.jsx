@@ -1,9 +1,17 @@
 
-import { Eye, Mail, Lock, ArrowRight } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, ArrowRight } from 'lucide-react';
 import loginImage from '../assets/images/auth_login.png';
-import useAuthHook from '../hooks/authHook';
+import useAuthHook from '../hooks/useAuthHook';
 const LoginUI = () => {
-  const { navigate } = useAuthHook();
+  const {
+    navigate,
+    register,
+    handleSubmit,
+    errors,
+    handleLoginSubmit,
+    showPassword,
+    setShowPassword
+  } = useAuthHook();
   return (
     <div className="min-h-screen w-full bg-[#FBF9F9] font-body relative lg:flex lg:h-screen lg:overflow-hidden">
 
@@ -18,9 +26,7 @@ const LoginUI = () => {
       </div>
 
       {/* ── Form Side ── */}
-      <div className="relative z-10 w-full lg:w-1/2 min-h-screen lg:min-h-0 lg:h-full
-                    flex flex-col items-center justify-center lg:items-start
-                    px-6 py-14 sm:px-16 md:px-24 lg:px-16 xl:px-24">
+      <div className="relative z-10 w-full lg:w-1/2 min-h-screen lg:min-h-0 lg:h-full flex flex-col items-center justify-center lg:items-start px-6 py-14 sm:px-16 md:px-24 lg:px-16 xl:px-24">
 
         {/* Form block */}
         <div className="w-full max-w-sm sm:maxa-w-md bg-white lg:bg-transparent p-6 sm:p-8 lg:p-0 border border-white/60 lg:border-none shadow-xl lg:shadow-none">
@@ -34,7 +40,7 @@ const LoginUI = () => {
             </p>
           </div>
 
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSubmit(handleLoginSubmit)}>
 
             {/* Email */}
             <div>
@@ -44,13 +50,15 @@ const LoginUI = () => {
               <div className="relative">
                 <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
                 <input
+                  {...register('email', { required: 'Email is required' })}
                   id="login-email"
                   type="email"
                   placeholder="you@example.com"
                   autoComplete="email"
-                  className="w-full rounded-none border border-neutral-300 bg-white/90 py-3 pl-10 pr-4 text-neutral-900 text-sm placeholder-neutral-400 outline-none transition-all duration-200 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900"
+                  className={`w-full rounded-none border border-neutral-300 bg-white/90 py-3 pl-10 pr-4 text-neutral-900 text-sm placeholder-neutral-400 outline-none transition-all duration-200 ${errors.email ? 'focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900'}`}
                 />
               </div>
+              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
             </div>
 
             {/* Password */}
@@ -61,19 +69,22 @@ const LoginUI = () => {
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
                 <input
+                  {...register('password', { required: 'Password is required' })}
                   id="login-password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   placeholder="Enter your password"
                   autoComplete="current-password"
-                  className="w-full rounded-none border border-neutral-300 bg-white/90 py-3 pl-10 pr-10 text-neutral-900 text-sm placeholder-neutral-400 outline-none transition-all duration-200 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900"
+                  className={`w-full rounded-none border border-neutral-300 bg-white/90 py-3 pl-10 pr-10 text-neutral-900 text-sm placeholder-neutral-400 outline-none transition-all duration-200 ${errors.password ? 'focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900'}`}
                 />
                 <button
                   type="button"
+                  onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700 transition-colors cursor-pointer"
                 >
-                  <Eye className="h-4 w-4" />
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
+              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
             </div>
 
             {/* Submit */}

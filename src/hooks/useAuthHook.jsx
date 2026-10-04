@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
-const authHook = () => {
+const useAuthHook = () => {
     const navigate = useNavigate()
-    const { register, handleSubmit, formState: { errors, isSubmitting }, reset, watch, setValue } = useForm({ mode: 'onChange' });
+    const { register, handleSubmit, formState: { errors }, reset, watch } = useForm({ mode: 'onChange' });
 
     const passwordValue = watch('password') || ''; // watch the password
     const [showPassword, setShowPassword] = useState(false); // visibility toggle
@@ -36,6 +36,11 @@ const authHook = () => {
     }
 
 
+    const handleLoginSubmit = (data) => {
+        console.log('Login Data:', data)
+        reset()
+    }
+
 
 
 
@@ -55,8 +60,9 @@ const authHook = () => {
         showConfirmPassword,
         setShowConfirmPassword,
         strengthScore,
-        strengthInfo
+        strengthInfo,
+        handleLoginSubmit
     }
 }
 
-export default authHook
+export default useAuthHook
