@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router'
+import { useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
+import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
 
 const useAuthHook = () => {
-    const navigate = useNavigate()
     const { register, handleSubmit, formState: { errors }, reset, watch } = useForm({ mode: 'onChange' });
+    const { registeredUsers, setRegisteredUsers, setLoggedInUser } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     const passwordValue = watch('password') || ''; // watch the password
     const [showPassword, setShowPassword] = useState(false); // visibility toggle
@@ -30,20 +34,33 @@ const useAuthHook = () => {
     ]
     const strengthInfo = strengthLevels[strengthScore] || strengthLevels[0];
 
+    // Function to handle registration submission
     const handleRegisterSubmit = (data) => {
-        console.log('Register Data:', data)
-        reset()
+        let userExist = registeredUsers.find((user) => user.email.trim().toLowerCase() === data.email.trim().toLowerCase());
+        if (userExist) {
+            toast.error('Email already exists. Please try another email.');
+            return;
+        }
+        let arr = [...registeredUsers, data];
+        setRegisteredUsers(arr);
+        localStorage.setItem('registeredUsers', JSON.stringify(arr));
+        toast.success('Registration successful! Please login.');
+        navigate('/');
+        reset();
     }
 
 
     const handleLoginSubmit = (data) => {
-        console.log('Login Data:', data)
-        reset()
+
+        let isUserRegistered = registeredUsers.find((user) => user.email === data.email && user.password === data.password);
+        if (!isUserRegistered) {
+            return toast.error("Unauthorized User, Please register before login")
+        }
+        setLoggedInUser(isUserRegistered);
+        localStorage.setItem("loggedInUser", JSON.stringify(isUserRegistered))
+        navigate("/main");
+        toast.success("Welcome!")
     }
-
-
-
-
 
 
 
@@ -52,8 +69,9 @@ const useAuthHook = () => {
         register,
         handleSubmit,
         errors,
-        navigate,
+        reset,
         handleRegisterSubmit,
+        handleLoginSubmit,
         passwordValue,
         showPassword,
         setShowPassword,
@@ -61,7 +79,7 @@ const useAuthHook = () => {
         setShowConfirmPassword,
         strengthScore,
         strengthInfo,
-        handleLoginSubmit
+        navigate
     }
 }
 
